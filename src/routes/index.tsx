@@ -197,6 +197,7 @@ function Index() {
             </div>
           ))}
         </div>
+<article id="reforma-banheiro" className="mt-12 flex flex-wrap items-center justify-between gap-6 rounded-2xl border border-border bg-card p-5"><div><h3 className="font-display text-4xl font-bold">Reforma de banheiro</h3><p className="mt-3 max-w-md text-muted-foreground">Da retirada do revestimento antigo ao rejunte das peças novas, acompanhe a reforma em 20 segundos.</p></div><video src={publicAsset("media/reforma-banheiro.mp4")} poster={publicAsset("media/reforma-banheiro.webp")} controls muted playsInline preload="none" width={270} height={480} style={{"maxWidth":"100%","height":"auto"}} className="rounded-2xl" aria-label="Vídeo da reforma do banheiro, do início ao acabamento"></video></article>
       </section>
 
       <section className="border-y border-border bg-card/40 py-28">
