@@ -21,6 +21,12 @@ npm i
 npm run dev
 ```
 
+## GitHub Pages
+
+Run `npm run build:pages` after changing the site and commit the generated
+`index.html`, `pages-assets/` and `.nojekyll` files. GitHub Pages publishes
+from the root of `main`. The images and videos come from `public/`.
+
 ## Built with
 
 - TanStack Start

@@ -5,6 +5,7 @@ import { FILTERS, PROJECTS, WHATSAPP_DISPLAY, whatsappLink, type Kind } from "@/
 import marca from "@/assets/marca.png.asset.json";
 import arte from "@/assets/arquitetura-ao-entardecer.webp.asset.json";
 import video from "@/assets/video-rampa.mp4.asset.json";
+import { publicAsset } from "@/lib/public-asset";
 
 function SiteVideo({ src, poster, posterAlt, label, playInView = false }: {
   src: string;
@@ -166,7 +167,7 @@ function Index() {
       <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <a href="#topo" className="flex items-center gap-3">
-            <img src={marca.url} alt="" className="h-9 w-9 rounded-md" />
+            <img src={publicAsset(marca.url)} alt="" className="h-9 w-9 rounded-md" />
             <span className="font-display text-sm font-bold tracking-wide">RP RAMALHO</span>
           </a>
           <div className="hidden gap-8 text-sm text-muted-foreground md:flex">
@@ -201,8 +202,8 @@ function Index() {
             </div>
           </div>
           <SiteVideo
-            src="/media/rp-ramalho-intro.mp4"
-            poster="/media/rp-ramalho-intro.webp"
+            src={publicAsset("/media/rp-ramalho-intro.mp4")}
+            poster={publicAsset("/media/rp-ramalho-intro.webp")}
             posterAlt="Estrutura de um edifício em construção"
             label="vídeo de abertura"
           />
@@ -214,8 +215,8 @@ function Index() {
         </div>
         <div className="relative px-6 py-12 sm:py-16">
           <SiteVideo
-            src="/media/rp-ramalho-construcao-predio.mp4"
-            poster="/media/rp-ramalho-construcao-predio.webp"
+            src={publicAsset("/media/rp-ramalho-construcao-predio.mp4")}
+            poster={publicAsset("/media/rp-ramalho-construcao-predio.webp")}
             posterAlt="Escavação com vigas e ferragens para a fundação"
             label="vídeo de construção"
             playInView
@@ -282,7 +283,7 @@ function Index() {
           </div>
         </div>
         <div className="reveal overflow-hidden rounded-3xl border border-border">
-          <video src={video.url} poster={arte.url} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          <video src={publicAsset(video.url)} poster={publicAsset(arte.url)} autoPlay muted loop playsInline className="h-full w-full object-cover" />
         </div>
       </section>
 

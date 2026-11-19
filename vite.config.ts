@@ -8,11 +8,27 @@
 // hosting already compresses at the edge.
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import type { ConfigEnv } from "vite";
 
-export default defineConfig({
-  tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
-    server: { entry: "server" },
-  },
-});
+export default function config(env: ConfigEnv) {
+  // TanStack reloads this configuration in preview mode to prerender the page.
+  const githubPages = process.env.npm_lifecycle_event === "build:pages";
+
+  return defineConfig({
+    ...(githubPages && {
+      vite: {
+        base: "/contrutorarpramalho/",
+        publicDir: false,
+        build: { assetsDir: "pages-assets" },
+      },
+    }),
+    // Only TanStack should render app routes. The root index.html is for Pages.
+    nitro: githubPages ? false : { renderer: false },
+    tanstackStart: {
+      // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
+      // nitro/vite builds from this
+      server: { entry: "server" },
+      ...(githubPages && { prerender: { enabled: true, crawlLinks: false } }),
+    },
+  })(env);
+}
