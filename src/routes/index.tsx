@@ -4,18 +4,10 @@ import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { FILTERS, PROJECTS, WHATSAPP_DISPLAY, whatsappLink, type Kind } from "@/lib/content";
 import marca from "@/assets/marca.png.asset.json";
 import arte from "@/assets/arquitetura-ao-entardecer.webp.asset.json";
-import video from "@/assets/video-rampa.mp4.asset.json";
 import { publicAsset } from "@/lib/public-asset";
 
-function SiteVideo({ src, poster, posterAlt, label, playInView = false }: {
-  src: string;
-  poster: string;
-  posterAlt: string;
-  label: string;
-  playInView?: boolean;
-}) {
+function HeroVideo({ src, poster }: { src: string; poster: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const manuallyPaused = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
 
@@ -25,55 +17,37 @@ function SiteVideo({ src, poster, posterAlt, label, playInView = false }: {
 
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     player.muted = true;
-
-    const startPlayback = () => {
-      if (!motionPreference.matches && !manuallyPaused.current) {
-        void player.play().catch(() => {});
-      }
-    };
-    const observer = playInView ? new IntersectionObserver(([entry]) => {
-      if (entry && entry.intersectionRatio >= 0.35) {
-        startPlayback();
-      } else if (!player.paused) {
-        player.pause();
-      }
-    }, { threshold: 0.35 }) : null;
-    if (observer) observer.observe(player);
-    else startPlayback();
-
-    const pauseForReducedMotion = (event: MediaQueryListEvent) => {
-      if (event.matches) player.pause();
+    if (!motionPreference.matches) {
+      void player.play().catch(() => {});
+    }
+    const pauseForReducedMotion = () => {
+      if (motionPreference.matches) player.pause();
     };
     motionPreference.addEventListener("change", pauseForReducedMotion);
-    return () => {
-      observer?.disconnect();
-      motionPreference.removeEventListener("change", pauseForReducedMotion);
-    };
-  }, [playInView, unavailable]);
+    return () => motionPreference.removeEventListener("change", pauseForReducedMotion);
+  }, []);
 
-  const togglePlayback = () => {
+  function togglePlayback() {
     const player = videoRef.current;
     if (!player) return;
-    manuallyPaused.current = !player.paused;
+
     if (player.paused) {
       void player.play().catch(() => {});
     } else {
       player.pause();
     }
-  };
+  }
 
   return (
-    <div className="relative mx-auto aspect-[9/16] w-full max-w-[min(23rem,58svh)] overflow-hidden rounded-3xl border border-border bg-card shadow-glow">
-      {unavailable ? (
-        <img src={poster} alt={posterAlt} className="h-full w-full object-contain" />
-      ) : (
-        <>
+    <>
+      <div className="hero-backdrop absolute inset-0" aria-hidden="true">
+        <img src={poster} alt="" className="hero-media" fetchPriority="high" />
+        {!unavailable && (
           <video
             ref={videoRef}
             src={src}
             poster={poster}
-            className="block h-full w-full object-contain"
-            aria-label={label}
+            className="hero-media"
             preload="none"
             muted
             loop
@@ -82,17 +56,19 @@ function SiteVideo({ src, poster, posterAlt, label, playInView = false }: {
             onPause={() => setPlaying(false)}
             onError={() => setUnavailable(true)}
           />
-          <button
-            type="button"
-            onClick={togglePlayback}
-            aria-label={`${playing ? "Pausar" : "Reproduzir"} ${label}`}
-            className="absolute right-3 bottom-3 grid size-11 place-items-center rounded-full border border-white/35 bg-black/75 text-white hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            {playing ? <Pause size={19} aria-hidden="true" /> : <Play size={19} aria-hidden="true" />}
-          </button>
-        </>
+        )}
+      </div>
+      {!unavailable && (
+        <button
+          type="button"
+          onClick={togglePlayback}
+          aria-label={playing ? "Pausar vídeo de fundo" : "Reproduzir vídeo de fundo"}
+          className="absolute right-5 bottom-5 z-10 grid size-11 place-items-center rounded-full border border-white/45 bg-black/55 text-white transition-colors hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 sm:bottom-8"
+        >
+          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
+        </button>
       )}
-    </div>
+    </>
   );
 }
 
@@ -179,50 +155,44 @@ function Index() {
         </nav>
       </header>
 
-      <section id="topo" className="relative bg-hero pt-24">
-        <div className="grid-lines pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 pt-5 pb-12 md:min-h-[calc(100svh-6rem)] lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <div className="motion-safe:animate-rise">
-            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-primary" /> Construção civil · Planaltina, DF
+      <section id="topo" className="relative isolate flex min-h-svh items-center overflow-hidden bg-background text-white">
+        <HeroVideo
+          src={publicAsset("media/capa-rp-ramalho.mp4")}
+          poster={publicAsset("media/capa-rp-ramalho.webp")}
+        />
+        <div className="relative mx-auto w-full max-w-7xl px-6 pt-28 pb-24 sm:px-10 lg:px-12">
+          <div className="max-w-3xl">
+            <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/40 bg-black/25 px-4 py-1.5 text-xs uppercase tracking-[0.16em] text-white">
+              <span className="size-2 rounded-full bg-primary" /> Construção civil · Planaltina, DF
             </p>
-            <h1 className="font-display text-[clamp(1.625rem,6.4vw,4.25rem)] font-extrabold leading-[1.08] tracking-tight">
-              RP Ramalho <span className="text-gradient block">Construções</span>
+            <h1 className="font-display text-[clamp(1.8rem,7.5vw,5.25rem)] font-extrabold leading-[1.04] tracking-tight">
+              RP Ramalho <span className="block text-primary">Construções</span>
             </h1>
-            <p className="mt-5 font-display text-lg font-bold sm:text-xl">Do alicerce à entrega.</p>
-            <p className="mt-3 max-w-md text-lg text-muted-foreground">Construção, reformas e melhorias para condomínios e áreas de uso comum.</p>
-            <div className="mt-7 flex flex-wrap gap-4">
-              <a href="#contato" className="rounded-full bg-primary px-7 py-3.5 font-bold text-primary-foreground shadow-glow transition-transform hover:scale-105">Solicitar orçamento</a>
-              <a href="#obras" className="rounded-full border border-border px-7 py-3.5 font-bold transition-colors hover:border-primary hover:text-primary">Explorar obras</a>
+            <p className="mt-6 font-display text-lg font-bold sm:text-2xl">Do alicerce à entrega.</p>
+            <p className="mt-3 max-w-md text-base text-white/95 sm:text-lg">
+              Construção, reformas e melhorias para condomínios e áreas de uso comum.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#contato" className="rounded-full bg-primary px-6 py-3.5 font-bold text-primary-foreground transition-colors hover:bg-primary/90">Solicitar orçamento</a>
+              <a href="#obras" className="rounded-full border border-white/55 bg-black/25 px-6 py-3.5 font-bold transition-colors hover:bg-black/55">Explorar obras</a>
             </div>
-            <div className="mt-9 flex gap-6 sm:gap-10">
-              {[["2018", "desde"], ["6+", "tipos de obra"], ["DF", "atuação"]].map(([a, b]) => (
-                <div key={b}><div className="font-display text-3xl font-bold text-primary">{a}</div><div className="text-xs uppercase tracking-widest text-muted-foreground">{b}</div></div>
+            <div className="mt-9 flex gap-6 border-t border-white/25 pt-5 sm:gap-10">
+              {[["2018", "desde"], ["6+", "tipos de obra"], ["DF", "atuação"]].map(([value, label]) => (
+                <div key={label}>
+                  <div className="font-display text-2xl font-bold text-primary sm:text-3xl">{value}</div>
+                  <div className="mt-1 text-xs uppercase tracking-wider text-white/90">{label}</div>
+                </div>
               ))}
             </div>
           </div>
-          <SiteVideo
-            src={publicAsset("/media/rp-ramalho-intro.mp4")}
-            poster={publicAsset("/media/rp-ramalho-intro.webp")}
-            posterAlt="Estrutura de um edifício em construção"
-            label="vídeo de abertura"
-          />
-        </div>
-        <div className="relative overflow-hidden border-y border-border py-4">
-          <div className="flex w-max gap-12 whitespace-nowrap font-display text-sm uppercase tracking-widest text-muted-foreground motion-safe:animate-marquee">
-            {Array.from({ length: 2 }).flatMap((_, k) => ["Obras", "Reformas", "Impermeabilização", "Infraestrutura", "Pavimentação", "Acabamentos", "Hidráulica", "Terraplenagem"].map((w) => <span key={k + w}>✦ {w}</span>))}
-          </div>
-        </div>
-        <div className="relative px-6 py-12 sm:py-16">
-          <SiteVideo
-            src={publicAsset("/media/rp-ramalho-construcao-predio.mp4")}
-            poster={publicAsset("/media/rp-ramalho-construcao-predio.webp")}
-            posterAlt="Escavação com vigas e ferragens para a fundação"
-            label="vídeo de construção"
-            playInView
-          />
         </div>
       </section>
+
+      <div className="relative overflow-hidden border-y border-border py-4">
+        <div className="flex w-max gap-12 whitespace-nowrap font-display text-sm uppercase tracking-widest text-muted-foreground motion-safe:animate-marquee">
+          {Array.from({ length: 2 }).flatMap((_, k) => ["Obras", "Reformas", "Impermeabilização", "Infraestrutura", "Pavimentação", "Acabamentos", "Hidráulica", "Terraplenagem"].map((w) => <span key={k + w}>✦ {w}</span>))}
+        </div>
+      </div>
 
       <section id="obras" className="mx-auto max-w-7xl px-6 py-28">
         <div className="reveal flex flex-wrap items-end justify-between gap-6">
@@ -283,7 +253,7 @@ function Index() {
           </div>
         </div>
         <div className="reveal overflow-hidden rounded-3xl border border-border">
-          <video src={publicAsset(video.url)} poster={publicAsset(arte.url)} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          <img src={publicAsset(arte.url)} alt="" loading="lazy" className="h-full min-h-64 w-full object-cover" />
         </div>
       </section>
 
