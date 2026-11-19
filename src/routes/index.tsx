@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { FILTERS, PROJECTS, WHATSAPP_DISPLAY, whatsappLink, type Kind } from "@/lib/content";
 import marca from "@/assets/marca.png.asset.json";
@@ -8,7 +7,6 @@ import { publicAsset } from "@/lib/public-asset";
 
 function HeroVideo({ src, poster }: { src: string; poster: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
@@ -27,17 +25,6 @@ function HeroVideo({ src, poster }: { src: string; poster: string }) {
     return () => motionPreference.removeEventListener("change", pauseForReducedMotion);
   }, []);
 
-  function togglePlayback() {
-    const player = videoRef.current;
-    if (!player) return;
-
-    if (player.paused) {
-      void player.play().catch(() => {});
-    } else {
-      player.pause();
-    }
-  }
-
   return (
     <>
       <div className="hero-backdrop absolute inset-0" aria-hidden="true">
@@ -52,22 +39,10 @@ function HeroVideo({ src, poster }: { src: string; poster: string }) {
             muted
             loop
             playsInline
-            onPlaying={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
             onError={() => setUnavailable(true)}
           />
         )}
       </div>
-      {!unavailable && (
-        <button
-          type="button"
-          onClick={togglePlayback}
-          aria-label={playing ? "Pausar vídeo de fundo" : "Reproduzir vídeo de fundo"}
-          className="absolute right-5 bottom-5 z-10 grid size-11 place-items-center rounded-full border border-white/45 bg-black/55 text-white transition-colors hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 sm:bottom-8"
-        >
-          {playing ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
-        </button>
-      )}
     </>
   );
 }
@@ -291,7 +266,7 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">© RP Ramalho Construções Ltda.</footer>
+      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground"><p>© RP Ramalho Construções Ltda.</p><p>Site desenvolvido por <strong>Jefferson Ramalho</strong></p><p><a href="https://wa.me/5583921418988">WhatsApp (83) 92141-8988</a> · <a href="mailto:jeffersonramalhopb@gmail.com">jeffersonramalhopb@gmail.com</a></p></footer>
 
       {current && open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 p-6 backdrop-blur-md" onClick={() => setOpen(null)}>
